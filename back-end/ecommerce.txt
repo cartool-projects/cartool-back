@@ -1,0 +1,50 @@
+Product model: This model will contain the following fields:
+
+name: A CharField for the name of the product.
+description: A TextField for the description of the product.
+price: A DecimalField for the price of the product.
+image: An VersatileImageField for the product's image.
+category: A ForeignKey to the Category model, which we'll define in the next model.
+
+Category model: This model will contain the following fields:
+
+name: A CharField for the name of the category.
+description: A TextField for the description of the category.
+
+Order model: This model will contain the following fields:
+
+customer: A ForeignKey to the User model, which is built into Django's authentication system.
+product: A ForeignKey to the Product model.
+quantity: An IntegerField for the quantity of the product being ordered.
+total_price: A DecimalField for the total price of the order, which can be calculated as product.price * quantity.
+status: A CharField to represent the status of the order, with options like "Pending", "Shipped", etc.
+
+Payment model: This model will contain the following fields:
+
+order: A ForeignKey to the Order model.
+amount: A DecimalField for the amount paid by the customer.
+payment_method: A CharField for the payment method used by the customer, such as "Credit Card" or "Paypal".
+date: A DateTimeField for the date and time when the payment was made.
+
+Cart model: This model will contain the following fields:
+customer: A ForeignKey to the User model.
+product: A ForeignKey to the Product model.
+quantity: An IntegerField for the quantity of the product being added to the cart.
+
+Manufacturer model: This model will contain the following fields:
+
+name: A CharField for the name of the manufacturer.
+description: A TextField for the description of the manufacturer.
+
+ProductSpecs model: This model will contain the following fields:
+
+product: A ForeignKey to the Product model.
+spec_name: A CharField for the name of the product specification.
+spec_value: A CharField for the value of the product specification.
+
+Review model: This model will contain the following fields:
+
+product: A ForeignKey to the Product model.
+customer: A ForeignKey to the User model.
+rating: An IntegerField for the customer's rating of the product, with options like 1-5 stars.
+review_text: A TextField for the customer's written review of the product.
