@@ -1,10 +1,31 @@
 Product model: This model will contain the following fields:
 
 name: A CharField for the name of the product.
-description: A TextField for the description of the product.
+description: A RichTextField for the description of the product.
 price: A DecimalField for the price of the product.
-image: An VersatileImageField for the product's image.
+created_at: A DateTimeField for the date and time when the product was created.
+image: An ManyToManyField to the ProductImage model, which we'll define in the next model.
 category: A ForeignKey to the Category model, which we'll define in the next model.
+status: A CharField to represent the status of the product, with options like "Available", "Out of Stock", etc.
+specifications: A ManyToManyField to the ProductSpecs model, which we'll define in the next model.
+discount: A ForeignKey to the Discount model, which we'll define in the next model.
+free_delivery: A BooleanField to represent whether the product is eligible for free delivery or not.
+slag: A SlugField for the slug of the product.
+
+ProductImage model: This model will contain the following fields:
+
+product: A ForeignKey to the Product model.
+image: An VersatileImageField for the product's image.
+
+
+Discount model: This model will contain the following fields:
+
+is_active: A BooleanField to represent whether the discount is active or not.
+discount: A DecimalField for the discount percentage of the product.
+start_date: A DateTimeField for the date and time when the discount starts.
+end_date: A DateTimeField for the date and time when the discount ends.
+
+
 
 Category model: This model will contain the following fields:
 
@@ -17,6 +38,7 @@ customer: A ForeignKey to the User model, which is built into Django's authentic
 product: A ForeignKey to the Product model.
 quantity: An IntegerField for the quantity of the product being ordered.
 total_price: A DecimalField for the total price of the order, which can be calculated as product.price * quantity.
+order_date: A DateTimeField for the date and time when the order was placed.
 status: A CharField to represent the status of the order, with options like "Pending", "Shipped", etc.
 
 Payment model: This model will contain the following fields:
@@ -30,17 +52,17 @@ Cart model: This model will contain the following fields:
 customer: A ForeignKey to the User model.
 product: A ForeignKey to the Product model.
 quantity: An IntegerField for the quantity of the product being added to the cart.
-
-Manufacturer model: This model will contain the following fields:
-
-name: A CharField for the name of the manufacturer.
-description: A TextField for the description of the manufacturer.
+total_price: A DecimalField for the total price of the cart, which can be calculated as product.price * quantity.
 
 ProductSpecs model: This model will contain the following fields:
 
 product: A ForeignKey to the Product model.
 spec_name: A CharField for the name of the product specification.
 spec_value: A CharField for the value of the product specification.
+
+"""
+About Us App
+"""
 
 Review model: This model will contain the following fields:
 

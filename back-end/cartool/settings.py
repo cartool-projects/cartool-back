@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     # apps
     'user',
+    'ecommerce',
 ]
 
 MIDDLEWARE = [
@@ -151,6 +152,18 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'cartool api documentation',
     'VERSION': '1.0.0',
 }
+
+
+STATIC_URL = '/static_common/'
+STATIC_ROOT = BASE_DIR / 'static_common'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+STATICFILES_DIRS = (
+    BASE_DIR / 'static',
+)
+
 
 LANGUAGE_CODE = 'en-us'
 
