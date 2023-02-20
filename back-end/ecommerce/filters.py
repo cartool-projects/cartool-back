@@ -4,7 +4,6 @@ from django_filters.constants import EMPTY_VALUES
 from django_filters.rest_framework import FilterSet, filters
 from django.utils.translation import gettext_lazy as _
 from rest_framework.filters import BaseFilterBackend
-from django_filters.rest_framework import RangeFilter
 
 from ecommerce.models import Product, Category
 from ecommerce.choices import ProductStatus
