@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import Product, Discount, Category, ProductSpecs
 
 
-
 class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
@@ -51,4 +50,3 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-
