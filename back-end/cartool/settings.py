@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     # packages
     'rest_framework',
     'debug_toolbar',
+    'django_filters',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'drf_spectacular',
+    'ckeditor',
     # apps
     'user',
     'ecommerce',
@@ -128,6 +130,7 @@ REST_FRAMEWORK = {
         'otp_verify_day': '10/d'
     },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 # simple JWT config
@@ -176,7 +179,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+CKEDITOR_UPLOAD_PATH = 'ckeditor/uploads'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

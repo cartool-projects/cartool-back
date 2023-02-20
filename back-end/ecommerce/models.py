@@ -13,9 +13,6 @@ class Product(models.Model):
     description = RichTextField(_("აღწერა"))
     price = models.DecimalField(_("ფასი"), max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(_("შექმნის თარიღი"), auto_now_add=True)
-    image = models.ManyToManyField("ProductImage",
-                                   verbose_name=_("სურათი"),
-                                   related_name="products", )
     category = models.ManyToManyField("Category",
                                       verbose_name=_("კატეგორია"),
                                       related_name="products", )
@@ -23,9 +20,6 @@ class Product(models.Model):
     status = models.IntegerField(_("სტატუსი"),
                                  choices=ProductStatus.choices,
                                  default=ProductStatus.AVAILABLE)
-    specifications = models.ManyToManyField("ProductSpecs",
-                                            verbose_name=_("სპეციფიკაცია"),
-                                            related_name="products", )
     discount = models.ForeignKey("Discount",
                                  verbose_name=_("ფასდაკლება"),
                                  related_name="products",
@@ -39,7 +33,7 @@ class Product(models.Model):
         verbose_name_plural = _("პროდუქტები")
 
     def __str__(self):
-        return self.name
+        return f'{self.name}-{self.id}'
 
 
 class ProductImage(models.Model):
@@ -50,6 +44,7 @@ class ProductImage(models.Model):
     image = VersatileImageField(_("სურათი"),
                                 upload_to="ecommerce/product_images/",
                                 blank=True, null=True)
+    #color = models.CharField(_("ფერი"), max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = _("პროდუქტის სურათი")
@@ -155,8 +150,8 @@ class Cart(models.Model):
                                 verbose_name=_("პროდუქტი"),
                                 related_name="carts",
                                 on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(_("რაოდენობა"))
-    total_price = models.DecimalField(_("ჯამური ფასი"),
+    quantity = models.PositiveIntegerField(_("რაოდენობა"), default=1)
+    total_price = models.DecimalField(_("ჯამური ფასი"), default=0,
                                       max_digits=10, decimal_places=2)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 

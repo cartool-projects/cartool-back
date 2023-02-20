@@ -1,0 +1,11 @@
+__pycache__
+.idea
+db.sqlite3
+media
+local.py
+static_common
+venv
+.coverage
+htmlcov
+dev/
+.DS_Store
