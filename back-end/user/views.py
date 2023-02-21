@@ -1,27 +1,21 @@
-from django.utils.http import urlsafe_base64_encode
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework import status
 
-from cartool.utils.token_generator import OTPVerifyTokenGenerator
 from user.models import User
-from user.serializers import CustomTokenObtainPairSerializer, UserCreateSerializer
+from user.serializers import MyTokenObtainPairSerializer, UserCreateSerializer
 
 
-class LoginView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        print(serializer.validated_data)
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+class MyObtainTokenPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    serializer_class = MyTokenObtainPairSerializer
 
 
 class UserCreateView(CreateAPIView):
@@ -44,8 +38,9 @@ class UserCreateView(CreateAPIView):
     request=None, responses={205: OpenApiTypes.STR}
 )
 @api_view(["POST"])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def user_logout(request):
-    token = RefreshToken()
+    token = RefreshToken(request.data["refresh"])
     token.blacklist()
     return Response("Success", status=status.HTTP_205_RESET_CONTENT)

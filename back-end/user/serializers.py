@@ -2,41 +2,45 @@ from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.fields import CharField
-from rest_framework_simplejwt.serializers import PasswordField
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.password_validation import validate_password
 
-from cartool.utils.token_generator import OTPVerifyTokenGenerator
 from user.models import User
 
 
-class CustomTokenObtainPairSerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
-    password = PasswordField()
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
-        return RefreshToken.for_user(user)
+        token = super(MyTokenObtainPairSerializer, cls).get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        return token
 
     def validate(self, attrs):
         data = {}
+
         try:
             user = User.objects.get(phone_number=attrs['phone_number'])
-            if user.check_password(attrs['password']):
-                refresh = self.get_token(user)
-                data['refresh'] = str(refresh)
-                data['access'] = str(refresh.access_token)
-                if api_settings.UPDATE_LAST_LOGIN:
-                    update_last_login(None, user)
-            else:
-                raise AuthenticationFailed({'password': [_('პაროლი არასწორია')]})
         except User.DoesNotExist:
-            raise AuthenticationFailed({'phone_number': [_('მოცემული ნომრით არ მოიძებნა მომხმარებელი')]})
+            raise AuthenticationFailed(_('მომხმარებელი არ მოიძებნა'))
 
-        return data
+        if user.check_password(attrs['password']):
+            refresh = self.get_token(user)
+
+            data["refresh"] = str(refresh)
+            data["access"] = str(refresh.access_token)
+
+            if api_settings.UPDATE_LAST_LOGIN:
+                update_last_login(None, user)
+
+            return data
+        else:
+            raise AuthenticationFailed(_('პაროლი არასწორია'))
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

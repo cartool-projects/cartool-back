@@ -154,6 +154,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'CARTOOL API',
     'DESCRIPTION': 'cartool api documentation',
     'VERSION': '1.0.0',
+    'SCHEMA_PATH_PREFIX': r'/api',
 }
 
 

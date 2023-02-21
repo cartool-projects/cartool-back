@@ -42,7 +42,6 @@ class Product(models.Model):
         self.save(update_fields=['views'])
 
 
-
 class ProductImage(models.Model):
     product = models.ForeignKey(Product,
                                 verbose_name=_("პროდუქტი"),

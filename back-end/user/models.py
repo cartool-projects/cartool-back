@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.base_user import BaseUserManager
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.validators import validate_phone_number, validate_email, validate_last_name, validate_first_name
 
@@ -61,14 +60,6 @@ class User(AbstractUser):
     @property
     def phone_last_three_numbers(self):
         return self.phone_number[-3:]
-
-    @property
-    def tokens(self):
-        refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }
 
     def __str__(self) -> str:
         return f'{self.first_name}'
