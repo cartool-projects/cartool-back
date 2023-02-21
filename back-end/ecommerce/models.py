@@ -27,6 +27,8 @@ class Product(models.Model):
                                  null=True, blank=True)
     free_delivery = models.BooleanField(_("უფასო მიწოდება"), default=False)
     slug = models.SlugField(_("სლაგი"), max_length=255, unique=True)
+    views = models.PositiveIntegerField(_("ნახვები"), default=0)
+    popular = models.BooleanField(_("პოპულარული"), default=False)
 
     class Meta:
         verbose_name = _("პროდუქტი")
@@ -34,6 +36,11 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name}-{self.id}'
+
+    def increase_views(self):
+        self.views += 1
+        self.save(update_fields=['views'])
+
 
 
 class ProductImage(models.Model):
@@ -44,7 +51,7 @@ class ProductImage(models.Model):
     image = VersatileImageField(_("სურათი"),
                                 upload_to="ecommerce/product_images/",
                                 blank=True, null=True)
-    #color = models.CharField(_("ფერი"), max_length=255, blank=True, null=True)
+    color = models.CharField(_("ფერი"), max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = _("პროდუქტის სურათი")

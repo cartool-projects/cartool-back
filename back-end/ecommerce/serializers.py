@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Discount, Category, ProductSpecs
+from .models import Product, Discount, Category, ProductSpecs, ProductImage
 
 
 class DiscountSerializer(serializers.ModelSerializer):
@@ -13,8 +13,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
 
     class Meta:
-        model = Product
-        fields = ['image']
+        model = ProductImage
+        fields = ['image', 'color']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'price', 'discount', 'product_image', 'status', 'free_delivery')
+        fields = ('id', 'name', 'price', 'discount', 'product_image', 'status', 'free_delivery', 'popular', 'views')
 
 
 class ProductRetrieveSerializer(serializers.ModelSerializer):
