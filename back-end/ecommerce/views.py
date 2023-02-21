@@ -48,6 +48,35 @@ class ProductViewSet(mixins.ListModelMixin,
         product.increase_views()
         return Response({'message': 'Views increased'}, status=status.HTTP_200_OK)
 
+    def get_filtered_queryset(self, queryset, filter_criteria):
+        queryset = self.filter_queryset(queryset).filter(**filter_criteria)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # Refactor existing methods to use the helper method
+    @action(detail=False, methods=['get'])
+    def most_viewed(self, request):
+        queryset = self.get_queryset().order_by('-views')
+        return self.get_filtered_queryset(queryset, {})
+
+    @action(detail=False, methods=['get'])
+    def new_product(self, request):
+        five_days_ago = timezone.now() - timezone.timedelta(days=14)
+        queryset = self.get_queryset().filter(created_at__gte=five_days_ago)
+        return self.get_filtered_queryset(queryset, {})
+
+    @action(detail=False, methods=['get'])
+    def popular(self, request):
+        return self.get_filtered_queryset(self.get_queryset(), {'popular': True})
+
+    @action(detail=False, methods=['get'])
+    def with_free_delivery(self, request):
+        return self.get_filtered_queryset(self.get_queryset(), {'free_delivery': True})
+
 
 class CategoryViewSet(generics.ListAPIView):
     queryset = Category.objects.all()
