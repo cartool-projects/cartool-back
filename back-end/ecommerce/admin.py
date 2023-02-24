@@ -15,20 +15,36 @@ class ProductSpecsInline(admin.TabularInline):
 
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, ProductSpecsInline]
-    readonly_fields = ('slug',)
-    list_display = ('name', 'price', 'discount', 'get_categories', 'slug')
+    readonly_fields = ('slug', 'views')
+    list_display = ('name', 'price', 'discount', 'get_categories')
     list_filter = ('discount', 'category', 'price')
     search_fields = ('name', 'description')
     sortable = 'order'
+    list_per_page = 10
 
     def get_categories(self, obj):
-        return ', '.join([category.name for category in obj.category.all()])
+        if obj.category:
+            return obj.category.get_path()
+        return None
 
-    def save_model(self, request, obj, form, change):
-        obj.slug = obj.name.replace(' ', '-').lower()
-        super().save_model(request, obj, form, change)
+    get_categories.short_description = 'Category Hierarchy'
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'parent', 'slug', 'category_hierarchy')
+    readonly_fields = ('slug',)
+    list_filter = ('parent',)
+    search_fields = ('name', 'description')
+    sortable = 'order'
+    list_per_page = 10
+
+    def category_hierarchy(self, obj):
+        return obj.get_path()
+
+    category_hierarchy.short_description = 'Category Hierarchy'
 
 
 admin.site.register(Product, ProductAdmin)
-admin.site.register([Order, ProductImage, Category, Discount, Payment])
+admin.site.register(Category, CategoryAdmin)
+admin.site.register([Order, ProductImage, Discount, Payment])
 admin.site.register([Cart, ProductSpecs], SortableAdmin)

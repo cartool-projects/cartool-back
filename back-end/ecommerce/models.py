@@ -1,3 +1,5 @@
+import re
+
 from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -13,9 +15,11 @@ class Product(models.Model):
     description = RichTextField(_("აღწერა"))
     price = models.DecimalField(_("ფასი"), max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(_("შექმნის თარიღი"), auto_now_add=True)
-    category = models.ManyToManyField("Category",
-                                      verbose_name=_("კატეგორია"),
-                                      related_name="products", )
+    category = models.ForeignKey("Category",
+                                 verbose_name=_("კატეგორია"),
+                                 related_name="products",
+                                 on_delete=models.CASCADE,
+                                 null=True, blank=True)
     in_stock = models.PositiveIntegerField(_("მარაგში დარჩენილი რაოდენობა"), default=0)
     status = models.IntegerField(_("სტატუსი"),
                                  choices=ProductStatus.choices,
@@ -40,6 +44,12 @@ class Product(models.Model):
     def increase_views(self):
         self.views += 1
         self.save(update_fields=['views'])
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = re.sub(r'[-\s]+', '-', self.name.lower())
+            self.slug = slug[:255]
+        super().save(*args, **kwargs)
 
 
 class ProductImage(models.Model):
@@ -76,10 +86,36 @@ class Discount(models.Model):
 
 class Category(models.Model):
     name = models.CharField(_("სახელი"), max_length=255, db_index=True)
+    slug = models.SlugField(_("სლაგი"), max_length=255,
+                            unique=True, blank=True, null=True)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE,
+                               verbose_name=_("მშობელი კატეგორია"),
+                               related_name="children", blank=True, null=True)
 
     class Meta:
         verbose_name = _("კატეგორია")
         verbose_name_plural = _("კატეგორიები")
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = re.sub(r'[-\s]+', '-', self.name.lower())
+            self.slug = slug[:255]
+        super().save(*args, **kwargs)
+
+    def get_parents(self):
+        parents = []
+        parent = self.parent
+        while parent:
+            parents.append(parent)
+            parent = parent.parent
+        # for string representation, not category objects
+        parents_names = [parent.slug for parent in parents]
+        return parents_names[::-1]
+
+    def get_path(self):
+        parents = self.get_parents()
+        parents.append(self.slug)
+        return '/'.join(parents)
 
     def __str__(self):
         return self.name
